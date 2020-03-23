@@ -1,0 +1,770 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "type": "SecureString"
+        },
+        "connections_sql_name": {
+            "defaultValue": "sql",
+            "type": "String"
+        },
+        "servers_dev_maaya_name": {
+            "defaultValue": "dev-maaya",
+            "type": "String"
+        },
+        "connections_sql_1_name": {
+            "defaultValue": "sql-1",
+            "type": "String"
+        },
+        "connections_teams_name": {
+            "defaultValue": "teams",
+            "type": "String"
+        },
+        "workflows_dev_report_name": {
+            "defaultValue": "dev-report",
+            "type": "String"
+        },
+        "connections_microsoftforms_name": {
+            "defaultValue": "microsoftforms",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[parameters('servers_dev_maaya_name')]",
+            "location": "westus2",
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "maaya",
+                "version": "12.0"
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_microsoftforms_name')]",
+            "location": "japaneast",
+            "properties": {
+                "displayName": "maishid@microsoft.com",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/', parameters('connections_microsoftforms_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_sql_name')]",
+            "location": "japaneast",
+            "properties": {
+                "displayName": "{database} {server}",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/', parameters('connections_sql_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_sql_1_name')]",
+            "location": "japaneast",
+            "properties": {
+                "displayName": "ps dev-maaya.database.windows.net",
+                "customParameterValues": {},
+                "api": {
+                    "id": "/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/sql"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_teams_name')]",
+            "location": "japaneast",
+            "properties": {
+                "displayName": "maishid@microsoft.com",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/', parameters('connections_teams_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/administrators",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ActiveDirectory')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "administratorType": "ActiveDirectory",
+                "login": "maishid@microsoft.com",
+                "sid": "eeb7a88b-b79b-4f3b-997b-88db102288c6",
+                "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingSettings",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "kind": "v12.0,user",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 524288000,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false,
+                "readScale": "Disabled",
+                "readReplicaCount": 0,
+                "storageAccountType": "GRS"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "retentionDays": 0,
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "retentionDays": 0,
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2018-06-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/current')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "status": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/AllowAllWindowsAzureIps')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ClientIp-2019-12-19_11-17-21')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "153.232.254.62",
+                "endIpAddress": "153.232.254.62"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ClientIPAddress_2019-12-19_13-46-22')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "167.220.232.239",
+                "endIpAddress": "167.220.232.239"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ClientIPAddress_2020-1-9_16-47-38')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "167.220.232.207",
+                "endIpAddress": "167.220.232.207"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/keys",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ServiceManaged')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/securityAlertPolicies",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+            "apiVersion": "2018-06-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                },
+                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "retentionDays": 0,
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2017-10-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 7
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "retentionDays": 0,
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2018-06-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/current')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "status": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[concat(parameters('servers_dev_maaya_name'), '/ps/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_dev_maaya_name'), 'ps')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_dev_maaya_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_dev_report_name')]",
+            "location": "japaneast",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', parameters('connections_microsoftforms_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_sql_1_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_teams_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "staticResults": {
+                        "メッセージを投稿する_(V3)0": {
+                            "status": "Succeeded",
+                            "outputs": {
+                                "headers": {},
+                                "statusCode": "OK"
+                            }
+                        }
+                    },
+                    "triggers": {
+                        "新しい応答が送信されるとき": {
+                            "splitOn": "@triggerBody()?['value']",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "eventType": "responseAdded",
+                                    "notificationUrl": "@{listCallbackUrl()}",
+                                    "source": "ms-connector"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['microsoftforms_1']['connectionId']"
+                                    }
+                                },
+                                "path": "/formapi/api/forms/@{encodeURIComponent('v4j5cvGGr0GRqy180BHbR4uot-6btztPmXuI2xAiiMZUNE41VlJUUThOWlRTU0pBSzhGQVhYRTVLTS4u')}/webhooks"
+                            }
+                        }
+                    },
+                    "actions": {
+                        "メッセージを投稿する_(V3)": {
+                            "runAfter": {
+                                "行を挿入する_(V2)": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "body": {
+                                        "content": "<p>訪問先: @{body('応答の詳細を取得する')?['ra66083e6252f43f68f2bed477f85eb3a']}<br>\n訪問日: @{body('応答の詳細を取得する')?['r86266934a0264f4b9595499c725cbd0e']}<br>\n訪問先客名: @{body('応答の詳細を取得する')?['rdfb2ac1b2580423d9272c6b518b05be2']}<br>\nMS訪問者: @{body('応答の詳細を取得する')?['r16e99d170e2646ac90caf2b6149fc0eb']}<br>\nOpportunity ID: @{body('応答の詳細を取得する')?['r8734c9b8f527447e9f471fc4361d5bfd']}<br>\nEngagement ID: @{body('応答の詳細を取得する')?['ra7b9e08b714b4b4f89807bb963f015f0']}<br>\nGov1000ID: @{body('応答の詳細を取得する')?['r0cb8694b09cd4035ab1878f7ee400487']}<br>\n内容＆結果: @{body('応答の詳細を取得する')?['rc02309892d8b493389f1371148bda5ec']}<br>\nNext Action: @{body('応答の詳細を取得する')?['r1125d017ed634cc5baa30236d1ba958c']}<br>\ncomments: @{body('応答の詳細を取得する')?['rc0999cf32d874dbdb9d7a01c83b41481']}<br>\n</p>",
+                                        "contentType": "html"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['teams_1']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v3/beta/teams/@{encodeURIComponent('15d4ee74-55cb-4085-944a-2d9bd6387765')}/channels/@{encodeURIComponent('19:c02356c965b648ecb1a68a0a80b3bbcf@thread.skype')}/messages"
+                            },
+                            "runtimeConfiguration": {
+                                "staticResult": {
+                                    "staticResultOptions": "Disabled",
+                                    "name": "メッセージを投稿する_(V3)0"
+                                }
+                            }
+                        },
+                        "応答の詳細を取得する": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['microsoftforms_1']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/formapi/api/forms('@{encodeURIComponent('v4j5cvGGr0GRqy180BHbR4uot-6btztPmXuI2xAiiMZUNE41VlJUUThOWlRTU0pBSzhGQVhYRTVLTS4u')}')/responses",
+                                "queries": {
+                                    "response_id": "@triggerBody()?['resourceData']?['responseId']"
+                                }
+                            }
+                        },
+                        "行を挿入する_(V2)": {
+                            "runAfter": {
+                                "応答の詳細を取得する": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "body": {
+                                    "comment": "@body('応答の詳細を取得する')?['rc0999cf32d874dbdb9d7a01c83b41481']",
+                                    "create_date": "@{formatDateTime(body('応答の詳細を取得する')?['r86266934a0264f4b9595499c725cbd0e'])}",
+                                    "customer": "@body('応答の詳細を取得する')?['ra66083e6252f43f68f2bed477f85eb3a']",
+                                    "customer_name": "@body('応答の詳細を取得する')?['rdfb2ac1b2580423d9272c6b518b05be2']",
+                                    "engagement_id": "@body('応答の詳細を取得する')?['ra7b9e08b714b4b4f89807bb963f015f0']",
+                                    "gov1000_id": "@body('応答の詳細を取得する')?['r0cb8694b09cd4035ab1878f7ee400487']",
+                                    "next_action": "@body('応答の詳細を取得する')?['r1125d017ed634cc5baa30236d1ba958c']",
+                                    "opportunity_id": "@body('応答の詳細を取得する')?['r8734c9b8f527447e9f471fc4361d5bfd']",
+                                    "outcome": "@body('応答の詳細を取得する')?['rc02309892d8b493389f1371148bda5ec']",
+                                    "visitor": "@body('応答の詳細を取得する')?['r16e99d170e2646ac90caf2b6149fc0eb']"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['sql_2']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[report]'))}/items"
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "microsoftforms_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_microsoftforms_name'))]",
+                                "connectionName": "microsoftforms",
+                                "id": "/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/microsoftforms"
+                            },
+                            "sql_2": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_sql_1_name'))]",
+                                "connectionName": "sql-1",
+                                "id": "/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/sql"
+                            },
+                            "teams_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_teams_name'))]",
+                                "connectionName": "teams",
+                                "id": "/subscriptions/66472546-b0e2-4d2d-9ab5-c65a2d636f2c/providers/Microsoft.Web/locations/japaneast/managedApis/teams"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
